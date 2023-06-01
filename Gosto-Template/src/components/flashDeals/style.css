@@ -1,0 +1,16 @@
+.flash {
+  background: #f6f9fc;
+  padding: 50px 0;
+}
+.flash__head {
+  color: #fff;
+  font-size: 22px;
+  margin-top: 10px;
+}
+.product_img {
+  width: 60%;
+}
+.heading i{
+  font-size: 20px;
+  margin-top: 12px;
+}

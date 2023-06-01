@@ -1,0 +1,48 @@
+.home__admin {
+    display: flex;
+}
+.navbar__admin {
+    width: 20%;
+}
+.user__admin {
+    width: 80%;
+}
+.container__body__content .body__content__listFilm{
+    padding: 20px;
+}
+.listFilm__header {
+    margin-top: 30px;
+}
+.listFilm__header .listFilm__header__nav{
+    display: flex;
+    justify-content: space-between;
+}
+
+.listFilm__header__nav__Show p{
+    font-size: 20px;
+    color: white;
+    font-weight: 600;
+}
+
+.nav__search__Film label{
+  
+    font-size: 20px;
+    margin-right: 20px;
+    color: white;
+    
+}
+#search__Film {
+    background-color: #141414;
+    border: none;
+    padding: 10px;
+    border-radius: 4%;
+    color:#83878a;
+}
+#search__Film:focus{
+   
+    outline: none;
+}
+
+.category__admin {
+    display: flex;
+}

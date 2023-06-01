@@ -1,0 +1,9 @@
+.navlink__item a {
+    font-size: 1.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #faa935;
+}
+.nav_category h4 {
+    font-size: 1.6 rem;
+}
