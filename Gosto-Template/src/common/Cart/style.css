@@ -12,7 +12,7 @@
   width: 30%;
   margin-top: 30px;
   margin-left: 30px;
-  height: 130px;
+  height: 180px;
 }
 .cart-list {
   background: white;
@@ -88,4 +88,15 @@
   font-size: 18px;
   margin-top: 30px;
   height: 130px;
+}
+.secondary__btn {
+  background-color: #e9a136;
+  border: 1px solid #e9a136;
+  border-radius: 20px;
+  color: #ffff;
+  font-size: 22px;
+  font-weight: 500;
+  height: 45px;
+  width: 120px;
+  margin: 20px 0 0 160px;
 }

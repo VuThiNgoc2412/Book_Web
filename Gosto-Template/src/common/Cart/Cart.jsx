@@ -1,11 +1,28 @@
 import React from "react"
 import "./style.css"
+import axios from "axios"
 
 const Cart = ({ CartItem, addToCart, decreaseQty }) => {
   // Stpe: 7   calucate total of items
-  const totalPrice = CartItem.reduce((price, item) => price + item.qty * item.price, 0)
+  const totalPrice = CartItem.reduce((price, item) => price + item.qty * item.Price, 0)
 
   // prodcut qty total
+  const handleBuy = () => {
+    var tokenn = localStorage.getItem("token");
+    axios
+      .post(
+        "http://127.0.0.1:8000/Admin/boughtbook",CartItem,
+        {
+          headers: {
+            Authorization: "Bearer " + tokenn,
+          },
+        }
+      )
+      .then((response) => {
+        alert('hi')
+      })
+      .catch((error) => {});
+  };
   return (
     <>
       <section className='cart-items'>
@@ -22,13 +39,13 @@ const Cart = ({ CartItem, addToCart, decreaseQty }) => {
               return (
                 <div className='cart-list product d_flex' key={item.id}>
                   <div className='img'>
-                    <img src={item.cover} alt='' />
+                    <img src={item.BookImage} alt='' />
                   </div>
                   <div className='cart-details'>
-                    <h3>{item.name}</h3>
+                    <h3>{item.BookName}</h3>
                     <h4>
-                      ${item.price}.00 * {item.qty}
-                      <span>${productQty}.00</span>
+                      ${item.Price}.00 * {item.qty}
+                      <span>${item.qty * item.Price}.00</span>
                     </h4>
                   </div>
                   <div className='cart-items-function'>
@@ -62,6 +79,7 @@ const Cart = ({ CartItem, addToCart, decreaseQty }) => {
               <h4>Total Price :</h4>
               <h3>${totalPrice}.00</h3>
             </div>
+            <button onClick = {() => handleBuy()} className="secondary__btn">Buy</button>
           </div>
         </div>
       </section>

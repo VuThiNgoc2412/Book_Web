@@ -17,6 +17,7 @@ import EditCategory from "./common/CategoryAdmin/EditCategory"
 import BookAdmin from "./common/BookAdmin/BookAdmin"
 import AddBook from "./common/BookAdmin/AddBook"
 import EditBook from "./common/BookAdmin/EditBook"
+import Account from "./common/Account/Account"
 
 
 function App() {
@@ -91,14 +92,16 @@ function App() {
           </Route>
           <Route path='/login' component = {Login} />
           <Route path='/register' component = {Register} />
-          <Route path='/detail' component = {BookDetail} />
+          <Route path='/books/:id' component = {BookDetail} />
           <Route path='/admin' component = {Admin} />
           <Route path='/adminCategory' component = {CategoryAdmin} />
           <Route path='/adminAddCategory' component = {AddCategory} />
-          <Route path='/adminEditCategory' component = {EditCategory} />
+          <Route path='/adminEditCategory/:id' component = {EditCategory} />
           <Route path='/adminBook' component = {BookAdmin} />
           <Route path='/adminAddBook' component = {AddBook} />
-          <Route path='/adminEditBook' component = {EditBook} />
+          <Route path='/adminEditBook/:id' component = {EditBook} />
+          <Route path='/account' component = {Account} />
+          
         </Switch>
         <Footer />
       </Router>

@@ -1,8 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NavbarAdmin from "../NavbarAdmin/NavbarAdmin";
 import "./categoryadmin.css";
+import CategoryAdminCard from "./CategoryAdminCard";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 const CategoryAdmin = () => {
+  const [category, setCategory] = useState([]);
+  const [click, setClick] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/Admin/allcategory")
+      .then((response) => {
+        setCategory(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [click]);
+
+  const handleSubmit = (id) => {
+    if (window.confirm("Can you delete category?") == true) {
+      axios
+        .delete("http://127.0.0.1:8000/Admin/deletecategory/" + id)
+        .then((response) => {
+          setClick(!click);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
   return (
     <>
       <div class="body__content__header">
@@ -11,10 +40,9 @@ const CategoryAdmin = () => {
         </div>
         <div class="content__header__AddCategory">
           <div class="Addcategory">
-            <a href="/Admin/AddCategory">
-              {" "}
-              <p>Add Category</p>{" "}
-            </a>
+            <Link to="/adminAddCategory">
+              <p>Add Category</p>
+            </Link>
           </div>
         </div>
       </div>
@@ -55,18 +83,26 @@ const CategoryAdmin = () => {
             </thead>
 
             <tbody classNameName="table__user-body">
-              <tr>
-                <td>Tên</td>
-                <td>Thể loại</td>
-                <td>
-                  <a className="btn-update">
-                    <i class="far fa-edit"></i>
-                  </a>
-                  <a className="btn-delete">
-                    <i class="fas fa-trash"></i>
-                  </a>
-                </td>
-              </tr>
+              {category.map((cate) => (
+                <tr key={cate.id}>
+                  <td>{cate.id}</td>
+                  <td>{cate.categoryname}</td>
+                  <td>
+                    <Link
+                      className="btn-update"
+                      to={`/adminEditCategory/${cate.id}`}
+                    >
+                      <i class="far fa-edit"></i>
+                    </Link>
+                    <a
+                      className="btn-delete"
+                      onClick={() => handleSubmit(cate.id)}
+                    >
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

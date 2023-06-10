@@ -1,0 +1,15 @@
+.account {
+    background-color: #3b3333;
+    border-radius: 4px;
+    margin-left: 315px;
+    margin-top: 20px;
+    padding: 50px 50px 30px 80px;
+    width: 1270px;
+}
+.account span {
+    font-size: 28px;
+    font-weight: 600;
+    color: #fff;
+    display: block;
+    line-height: 48px;
+}

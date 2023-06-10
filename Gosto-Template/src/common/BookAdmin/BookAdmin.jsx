@@ -1,9 +1,37 @@
 import React from "react";
 import "./bookadmin.css";
-import NavbarAdmin from "../NavbarAdmin/NavbarAdmin";
 import { Link } from "react-router-dom";
-
+import NavbarAdmin from "../NavbarAdmin/NavbarAdmin";
+import { useState, useEffect } from "react";
+import axios from "axios";
 const BookAdmin = () => {
+  const [book, setBook] = useState([]);
+  const [click, setClick] = useState(false);
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/Admin/allbook")
+      .then((response) => {
+        // Lưu dữ liệu trả về vào state
+        setBook(response.data);
+      })
+      .catch((error) => {});
+  }, [click]);
+
+  const handle = (id) => {
+    if (window.confirm("Can you delete book?") == true) {
+      var tokenn = localStorage.getItem("token");
+      axios
+        .delete("http://127.0.0.1:8000/Admin/delete/" + id, {
+          headers: {
+            Authorization: "Bearer " + tokenn,
+          },
+        })
+        .then((response) => {
+          setClick(!click);
+        })
+        .catch((error) => {});
+    }
+  };
   return (
     <>
       <div class="container__body">
@@ -15,8 +43,7 @@ const BookAdmin = () => {
             <div class="content__header__AddFilm">
               <div class="Addfilm">
                 <Link to="/adminAddBook">
-                  {" "}
-                  <p>Add Book</p>{" "}
+                  <p>Add Book</p>
                 </Link>
               </div>
             </div>
@@ -58,30 +85,35 @@ const BookAdmin = () => {
                 <th>Thể loại</th>
                 <th>Ngày phát hành</th>
                 <th>Số trang</th>
-                <th>Số lượng đã bán</th>
+                <th>Price</th>
                 <th>Action</th>
               </tr>
             </thead>
 
+            {/* <BookAdminCard book={book} /> */}
             <tbody classNameName="table__user-body">
-              <tr>
-                <td>Thỏ và Rùa</td>
-                <td>Không biết</td>
-                <td>Truyện tranh</td>
-                <td>20/10/2010</td>
-                <td>50</td>
-                <td>10</td>
+              {book.map((book) => (
+                <tr key={book.id}>
+                  <td>{book.BookName}</td>
+                  <td>{book.Author}</td>
+                  <td>{book.Category}</td>
+                  <td>{book.Releasedate}</td>
+                  <td>{book.PageNumber}</td>
+                  <td>{book.Price}</td>
 
-                <td>
-                  <Link to="/adminEditBook" className="btn-update">
-                    <i class="far fa-edit"></i>
-                    <></>
-                  </Link>
-                  <a className="btn-delete">
-                    <i class="fas fa-trash"></i>
-                  </a>
-                </td>
-              </tr>
+                  <td>
+                    <Link
+                      to={`/adminEditBook/${book.id}`}
+                      className="btn-update"
+                    >
+                      <i class="far fa-edit"></i>
+                    </Link>
+                    <a onClick={() => handle(book.id)} className="btn-delete">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

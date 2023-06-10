@@ -2,7 +2,7 @@ import React from "react";
 import "./useradmin.css";
 import HeaderAdmin from "../HeaderAdmin/HeaderAdmin";
 
-const UserAdmin = () => {
+const UserAdmin = ( { information }) => {
   return (
     <>
       {/* <HeaderAdmin /> */}
@@ -13,18 +13,19 @@ const UserAdmin = () => {
         <table className="table__user">
           <thead className="table__user-head">
             <tr>
-              <th>Tên</th>
+              <th>ID</th>
+              <th>UserName</th>
               <th>Email</th>
-              <th>Ngày sinh</th>
               <th>Action</th>
             </tr>
           </thead>
 
           <tbody classNameName="table__user-body">
-            <tr>
-              <td>Tên</td>
-              <td>Email</td>
-              <td>Ngày sinh</td>
+            {information.map((info) => (
+              <tr key={info.id}>
+              <td>{info.id}</td>
+              <td>{info.username}</td>
+              <td>{info.email}</td>
               <td>
                 <a className="btn-update">
                   <i class="far fa-edit"></i>
@@ -34,6 +35,7 @@ const UserAdmin = () => {
                 </a>
               </td>
             </tr>
+            ))}
           </tbody>
         </table>
       </div>

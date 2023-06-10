@@ -1,6 +1,28 @@
 import React from 'react'
 import './register.css'
+import axios from "axios";
+import { Link } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 const Register = () => {
+    const navigate = useHistory()
+    const handleSubmit = () => {
+        var usename = document.getElementById("username").value
+        var email = document.getElementById("email").value
+        var password = document.getElementById("password").value
+
+        try {
+            axios.post("http://127.0.0.1:8000/Admin/signup", {
+                UserName :usename,
+                Email : email,
+                Password : password,
+
+            });
+            navigate.push(`/login`);
+        } catch (error) {
+            alert("Tài khoản hoặc mật khẩu không tồn tại");
+        }
+    }
+
   return (
     <>
         <div id="header1">
@@ -19,29 +41,26 @@ const Register = () => {
                         </div>
                         <div class="info">
                             <div class="info__Input">
-                                <label for="Username" >Email </label>
-                                <input class="email" onkeyup="signupByEnter()" id="Username" type="text" /> 
+                                <input placeholder ="Email" class="email" onkeyup="signupByEnter()" id="email" type="email" /> 
                                 <div class="username__Error Error">
                                     <p>Vui lòng nhập email hợp lệ.</p>
                                 </div>
                             </div>
                             <div class="info__Input">
-                                <label for="password" >Mật khẩu</label>
-                                <input id="password" onkeyup="signupByEnter()" class="email" type="password" />
+                                <input placeholder="Password" id="password" onkeyup="signupByEnter()" class="email" type="password" />
                                 <div class="password__Error Error">
                                     <p>Mật khẩu của bạn phải chứa từ 4 đến 60 ký tự.</p>
                                 </div>
                             </div>
                             <div class="info__Input">
-                                <label for="fullName" >Full Name</label>
-                                <input id="fullName" onkeyup="signupByEnter()" class="email" type="text" />
+                                <input placeholder='Username' id="username" onkeyup="signupByEnter()" class="email" type="text" />
                                 <div class="fullName__Error Error">
                                   <p>Vui lòng nhập đúng định dạng Email</p>
                                 </div>
                             </div>
                         </div>
                         <div class="btn">
-                            <button class="btn-primary" type="submit" onclick="signup()">Sign Up</button>
+                            <button class="btn-primary" type="submit" onClick={handleSubmit}>Sign Up</button>
                         </div>
                         <div class="help">
 

@@ -38,6 +38,7 @@
 }
 .content__Film__input {
     margin: 0 10px 0 10px ;
+    width: 100%;
 }
 .content__Film__input label{
     color: white;

@@ -1,5 +1,4 @@
 import React from "react"
-import logo from "../../components/assets/images/logo.svg"
 import { Link } from "react-router-dom"
 import './search.css'
 
@@ -11,6 +10,7 @@ const Search = ({ CartItem }) => {
   })
 
   return (
+    
     <>
       <section className='search'>
         <div className='container c_flex search_container'>
@@ -25,7 +25,7 @@ const Search = ({ CartItem }) => {
           </div>
 
           <div className='icon f_flex width'>
-            <i className='fa fa-user icon-circle'></i>
+            <Link to ="/account"><i className='fa fa-user icon-circle'></i></Link>
             <div className='cart'>
               <Link to='/cart'>
                 <i className='fa fa-shopping-bag icon-circle'></i>
