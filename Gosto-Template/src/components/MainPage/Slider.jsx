@@ -17,8 +17,13 @@ const SliderHome = () => {
   };
   const [bookData, setBookData] = useState([]);
   useEffect(() => {
+    var tokenn = localStorage.getItem("token");
     axios
-      .get("http://127.0.0.1:8000/Admin/allbook")
+      .get("http://127.0.0.1:8000/Admin/Recommend", {
+        headers: {
+          Authorization: "Bearer " + tokenn,
+        },
+      })
       .then((response) => {
         // Lưu dữ liệu trả về vào state
         setBookData(response.data);
@@ -30,11 +35,10 @@ const SliderHome = () => {
     <>
       <section className="homeSlide contentWidth">
         <div className="container">
-        <Slider {...settings}>
-          {bookData.map((productItems) => (
-            <SlideCard productItems={productItems} />
-
-          ))}
+          <Slider {...settings}>
+            {bookData.map((productItems) => (
+              <SlideCard productItems={productItems} />
+            ))}
           </Slider>
         </div>
       </section>

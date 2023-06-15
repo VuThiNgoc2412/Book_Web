@@ -30,7 +30,7 @@ const BookDetail = () => {
         }
       )
       .then((res) => {
-        alert("hi");
+        alert("Do you want to recommend and rate?");
         setClick(!click);
       })
       .catch((err) => console.log(err));
@@ -135,19 +135,19 @@ const BookDetail = () => {
 
                   <form onSubmit={handleSubmit}>
                     <div className="rating__group">
-                      <span onClick={() => setRating(1)}>
+                      <span  onClick={() => setRating(1)}>
                         1 <i className="fas fa-star rating__start"></i>
                       </span>
-                      <span onClick={() => setRating(2)}>
+                      <span  onClick={() => setRating(2)}>
                         2 <i className="fas fa-star rating__start"></i>
                       </span>
-                      <span onClick={() => setRating(3)}>
+                      <span  onClick={() => setRating(3)}>
                         3 <i className="fas fa-star rating__start"></i>
                       </span>
-                      <span onClick={() => setRating(4)}>
+                      <span  onClick={() => setRating(4)}>
                         4 <i className="fas fa-star rating__start"></i>
                       </span>
-                      <span onClick={() => setRating(5)}>
+                      <span  onClick={() => setRating(5)}>
                         5 <i className="fas fa-star rating__start"></i>
                       </span>
                     </div>

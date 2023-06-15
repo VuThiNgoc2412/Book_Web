@@ -18,11 +18,11 @@ const Search = ({ CartItem }) => {
             <img src='https://lh3.googleusercontent.com/-7bsVBKC6hD0/WsHE7yTRpDI/AAAAAAAABI0/slNNA7VmfEQeCh-0E61pw7xmBTovSZHBQCHMYCw/h136/1-mau_slide_powerpoint_dep_ctu.vn_(29).gif' alt='' />
           </div>
 
-          <div className='search-box f_flex'>
+          {/* <div className='search-box f_flex'>
             <i className='fa fa-search'></i>
             <input type='text' placeholder='Tìm kiếm sách...' />
             <span>Thể loại</span>
-          </div>
+          </div> */}
 
           <div className='icon f_flex width'>
             <Link to ="/account"><i className='fa fa-user icon-circle'></i></Link>

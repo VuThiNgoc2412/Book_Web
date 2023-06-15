@@ -155,3 +155,9 @@
     font-weight: 500;
     font-size: 1.4rem;
 }
+.rating__start:active {
+    color: #d48919;
+}
+.rating__start:hover {
+    color: #d48919;
+}

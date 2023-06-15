@@ -14,7 +14,7 @@ from core.RoleDecorator import RoleRequest
 import os
 import numpy as np
 import pandas as pd
-from django.db.models import Sum
+from django.db.models import Sum,Count
 from django.db.models import Avg
 from sklearn.metrics.pairwise import cosine_similarity
 from core.settings import MEDIA_ROOT
@@ -211,7 +211,7 @@ class Boughted(APIView):
             newBought = Bought(User= user, Book=Book.objects.get(pk = i['id']), Quantity= i['qty'], PurchasedPrice= i['Price'], StatusBuy='InBill',Bill=newBill)
             newBought.save()
         return Response({"message":"thành công"},status=201)
-
+    
 class BoughtAC(APIView):
     def get(self,request):
         book = Bought.objects.filter(User_id = request.userID).annotate(
@@ -261,12 +261,14 @@ class HuyDon(APIView):
         bill = Bill.objects.get(pk = id)
         bill.delete()
         return Response({"message":"daxoa"}, status=200)
+    
+    
 class RecommendView(APIView):
     # @method_decorator(RoleRequest(allowedRoles=['Admin']))
     def get(self, request):
         
         history= Bought.objects.filter(User__id=request.userID)
-        #nếu User mới thì recommend cho user chapter hot trong tuần
+        #nếu User mới thì recommend cho user tất cả sách
         if(len(history)==0) :
             booksHotCount = Bought.objects.values('Book__id').annotate(sum=Sum('Quantity')).order_by('-sum')
             try:
@@ -282,155 +284,72 @@ class RecommendView(APIView):
         #----------------------- Content Based System Recommend -----------------------------
         
         
-        #khởi tạo lượt xem của người dùng với thể loại
-        # 
-        # categoryUserView=[]
-        # for i in history:
-        #     for j in i.Chapter.Film.filmcategory.all():
-        #         categoryUserView.append(j.Category.id)
-        # #khởi tạo lượt xem của người dùng với diễn viên
-        # actorUserView=[]
-        # for i in history:
-        #     for j in i.Chapter.chapteractor.all():
-        #         actorUserView.append(j.Actor.id)
+        #khởi tạo lượt mua của người dùng với thể loại
         
+        categoryUserView=[]
+        for i in history:
+            categoryUserView.append(i.Book.Category.id)
+        
+        #khởi tạo lượt mua của người dùng với tác giả
+        authorUserView=[]
+        for i in history:
+            authorUserView.append(i.Book.Author)
+       
         #láy toàn bộ Book mà User chưa mua
        
         bookAll = Book.objects.exclude(id__in=history.values_list('Book', flat=True))
-      
+     
         #lấy toàn bộ Thể loại
         categoryAll = Category.objects.all()
 
         #lấy toàn bộ tác giả
-        authorAll = Book.objects.values('Author')
-        print(authorAll)
+        authorAll = Book.objects.values('Author').annotate(ddd=Count('id'))
+        
         #khởi tạo ma trận với hàng là các book người dùng chưa xem còn cột là category,actor
-        book_matrix = np.zeros((len(bookAll), len(categoryAll)+len(bookAll)))
-        # khởi tạo phần category cho chapter_matrix
+        book_matrix = np.zeros((len(bookAll), len(categoryAll)+len(authorAll)))
+        print(book_matrix)
+        # khởi tạo phần category cho book_matrix
         for i in range(len(bookAll)):
             for j in range(len(categoryAll)):
                 if categoryAll[j].pk==bookAll[i].Category.pk:
                     book_matrix[i,j]=1
-        # khởi tạo phần actor cho chapter_matrix
+        # khởi tạo phần actor cho book_matrix
+        
         for i in range(len(bookAll)):
             for j in range(len(authorAll)):
-                if authorAll[j] :
+                if authorAll[j]['Author'] ==bookAll[i].Author:
                     
-                    book_matrix[i,j]=1
+                    book_matrix[i,j+len(categoryAll)]=1
+       
         print(book_matrix)
-    
-        # #khởi tạo ma trận với hàng là User đang đăng nhập(1 hàng) còn cột là category,actor
-        # userLogin_matrix = []
-        # # khởi tạo phần category cho userLogin_matrix
-        # for i in categoryAll:
-        #     if i.id in categoryUserView:
-        #         userLogin_matrix.append(categoryUserView.count(i.id)/len(categoryUserView))
-        #     else:
-        #         userLogin_matrix.append(0)
-        # # khởi tạo phần actor cho userLogin_matrix
-        # for i in actorAll:
-        #     if i.id in actorUserView:
-        #         userLogin_matrix.append(actorUserView.count(i.id)/len(actorUserView))
-        #     else:
-        #         userLogin_matrix.append(0)
-        # print(userLogin_matrix)
-        # print()
-        # similarity_scores = cosine_similarity( np.array(userLogin_matrix).reshape(1,-1),chapter_matrix)
-        # sorted_indices = np.argsort(similarity_scores, axis=1)[0]
+        #khởi tạo ma trận với hàng là User đang đăng nhập(1 hàng) còn cột là category,actor
+        userLogin_matrix = []
+        # khởi tạo phần category cho userLogin_matrix
+        for i in categoryAll:
+            if i.id in categoryUserView:
+                userLogin_matrix.append(categoryUserView.count(i.id)/len(categoryUserView))
+            else:
+                userLogin_matrix.append(0)
         
-        # # Lấy ra các chapter được recommend
-        # recommended_chapters = []
-        # for i in sorted_indices:
-        #     if len(recommended_chapters)>5:
-        #         break
-        #     if chapterAll[int(i)].ChapterStatus =='Đã ra':
-        #         recommended_chapters.append(chapterAll[int(i)])
-        #----------------------- Collaborative Filtering System Recommend -----------------------------
-
+        # khởi tạo phần actor cho userLogin_matrix
+        for i in authorAll:
+            if i['Author'] in authorUserView:
+                userLogin_matrix.append(authorUserView.count(i['Author'])/len(authorUserView))
+            else:
+                userLogin_matrix.append(0)
+        print(userLogin_matrix)
+        print()
+        similarity_scores = cosine_similarity( np.array(userLogin_matrix).reshape(1,-1),book_matrix)
+        sorted_indices = np.argsort(similarity_scores, axis=1)[0]
         
-        # # Lấy thông tin người dùng đăng nhập
-        # userLogin= User.objects.get(pk=request.userID) 
-        
-        # # Lấy toàn bộ người dùng 
-        # users = User.objects.all()
-        # # Tìm kiếm vị trí của người dùng
-        # for i in range(len(users)):
-        #     if users[i].pk==userLogin.pk:
-        #         indexUserLogin=i
-        #         break
-            
-        # # Lấy toàn bộ Chapter
-        # chapters = Chapter.objects.all()
-        
-        # # Tạo ma trận full 0 với số hàng là số chapter và số cột là số User
-        # ratings_matrix = np.zeros(( len(chapters),len(users)))
-        
-        # # thay đổi các giá trị 0 thành điểm số Rate trong history nếu người dùng đã đánh giá
-        # for i, chapter in enumerate(chapters):
-        #     for j, user in enumerate(users):
-        #         # get all ratings for this user and chapter
-        #         try:
-        #             rating = History.objects.get(User=user, Chapter=chapter)
-        #             ratings_matrix[i, j] = rating.Rate
-        #         except:
-        #             pass
-        # print(ratings_matrix)
-        # # chuẩn hóa ma trận để giảm các rating giống nhau thể hiện rõ hơn sự đánh giá trái triều:
-        # ratings_matrixx = np.zeros(( len(chapters),len(users)))
-        
-        # for i in range(len(ratings_matrix)):
-        #     fullZero=False
-        #     try:
-        #         avg=np.sum(ratings_matrix[i])/np.count_nonzero(ratings_matrix[i])   
-        #     except:fullZero=True
-        #     if not fullZero:
-        #         for j in range(len(ratings_matrixx[i])):
-        #             if(ratings_matrix[i,j]!=0):
-        #                 ratings_matrixx[i,j]=  ratings_matrix[i,j]-avg
-        # print(ratings_matrixx)
-        # # Hoàn Thành ma trận rating của UserLogin với chapter
-        # ratingChapterUser=[]
-        # for i in range(len(ratings_matrix)):
-        #     if(ratings_matrix[i][indexUserLogin]!=0):
-        #         ratingChapterUser.append(ratings_matrix[i][indexUserLogin])
-        #     else:
-        #         ratingList=[]
-        #         for j in range(len(ratings_matrixx)):
-        #                 newChapter1=[]
-        #                 newChapter2=[]
-        #                 # Dùng vòng for và loại bỏ các giá trị =0 của cả 2 vecto để bỏ đi các rating =0
-        #                 for l in range(len(ratings_matrixx)):
-        #                     if ratings_matrixx[i][l] !=0 and ratings_matrixx[j][l]!=0:
-        #                         newChapter1.append(ratings_matrixx[i][l])
-        #                         newChapter2.append(ratings_matrixx[j][l])
-        #                 # Tính độ tương đồng giữa 2 chapter bằng cosin 
-        #                 cos_sim = np.dot(newChapter1, newChapter2) / (np.linalg.norm(newChapter1) * np.linalg.norm(newChapter2))
-        #                 if   np.isnan(cos_sim):
-        #                     cos_sim=0
-        #                 ratingList.append(cos_sim)
-        #         #lấy ra 2 chapter giông chapter đang tính rating nhất và tính trugn bình có trọng số
-        #         sortRatingList=np.argsort(ratingList)
-        #         ratingChapterUser.append((ratingList[sortRatingList[0]]*ratings_matrix[sortRatingList[0]][indexUserLogin]+ratingList[sortRatingList[1]]*ratings_matrix[sortRatingList[1]][indexUserLogin])/(ratingList[sortRatingList[0]]+ratingList[sortRatingList[1]]))
-        # sorted_index = sorted(range(len(ratingChapterUser)), key=lambda i: ratingChapterUser[i], reverse=True)    
-        # print(ratingChapterUser)
-        
-        # # Liệt kê film recomend
-        # for i in sorted_index:
-        #     checkExit=False
-        #     checkViewed=False
-        #     for j in recommended_chapters:
-        #         if chapters[i].pk==j.pk:
-        #             checkExit=True
-        #             break
-        #     for j in chapterAll:
-        #         if chapters[i].pk==j.pk:
-        #             checkViewed=True
-        #     if checkExit or not checkViewed:continue     
-        #     if len(recommended_chapters)>10:
-        #         break
-        #     if chapters[i].ChapterStatus =='Đã ra' :
-                
-                 
-        #         recommended_chapters.append(chapters[i])
-        # chapterRecommendSerializer= ChapterSerializer(recommended_chapters,many=True)
-        return Response({"d":"d"},status=200)
+        # Lấy ra các sách được recommend
+        recommended_books = []
+        for i in sorted_indices:
+            if len(recommended_books)>5:
+                break
+           
+            recommended_books.append(bookAll[int(i)])
+        print(recommended_books)
+        bookRecommendSerializer= BookSerializer(recommended_books,many=True)
+        return Response(bookRecommendSerializer.data,status=200)
+       

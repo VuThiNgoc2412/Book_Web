@@ -1,12 +1,14 @@
 import React from "react"
 import "./style.css"
 import axios from "axios"
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min"
 
 const Cart = ({ CartItem, addToCart, decreaseQty }) => {
   // Stpe: 7   calucate total of items
   const totalPrice = CartItem.reduce((price, item) => price + item.qty * item.Price, 0)
 
   // prodcut qty total
+  const navigate = useHistory()
   const handleBuy = () => {
     var tokenn = localStorage.getItem("token");
     axios
@@ -19,7 +21,8 @@ const Cart = ({ CartItem, addToCart, decreaseQty }) => {
         }
       )
       .then((response) => {
-        alert('hi')
+        alert('Do you want to buy them?')
+        navigate.push(`/account`)
       })
       .catch((error) => {});
   };
